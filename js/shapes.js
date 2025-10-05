@@ -5,6 +5,22 @@ let isDragging = false;
 let dragOffset = { x: 0, y: 0 };
 const shapesLayer = document.getElementById('shapes-layer');
 function createShape(type, x, y) {
+    if (type === 'inicio') {
+        const existingStart = shapes.find(s => s.type === 'inicio');
+        if (existingStart) {
+            showAlert('⚠️ Solo puede haber UN inicio en el diagrama', 'error');
+            return;
+        }
+    }
+    
+    if (type === 'fin') {
+        const existingEnd = shapes.find(s => s.type === 'fin');
+        if (existingEnd) {
+            showAlert('⚠️ Solo puede haber UN fin en el diagrama', 'error');
+            return;
+        }
+    }
+    
     const shapeId = `shape-${shapeIdCounter++}`;
     
     const shapeData = {
@@ -17,6 +33,7 @@ function createShape(type, x, y) {
     
     shapes.push(shapeData);
     renderShape(shapeData);
+    updateStats();
     
     console.log(`✅ Figura creada: ${type} en (${x}, ${y})`);
 }
@@ -38,9 +55,9 @@ function renderShape(data) {
     g.setAttribute('data-type', data.type);
     g.setAttribute('transform', `translate(${data.x}, ${data.y})`);
     let shapeElement;
+    
     switch(data.type) {
         case 'inicio':
-        case 'fin':
             shapeElement = document.createElementNS('http://www.w3.org/2000/svg', 'ellipse');
             shapeElement.setAttribute('cx', 0);
             shapeElement.setAttribute('cy', 0);
@@ -48,6 +65,16 @@ function renderShape(data) {
             shapeElement.setAttribute('ry', 40);
             shapeElement.setAttribute('class', 'shape-ellipse');
             break;
+            
+        case 'fin':
+            shapeElement = document.createElementNS('http://www.w3.org/2000/svg', 'ellipse');
+            shapeElement.setAttribute('cx', 0);
+            shapeElement.setAttribute('cy', 0);
+            shapeElement.setAttribute('rx', 60);
+            shapeElement.setAttribute('ry', 40);
+            shapeElement.setAttribute('class', 'shape-ellipse-end');
+            break;
+            
         case 'proceso':
             shapeElement = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
             shapeElement.setAttribute('x', -70);
@@ -64,10 +91,14 @@ function renderShape(data) {
             break;
             
         case 'entrada':
-        case 'salida':
             shapeElement = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
             shapeElement.setAttribute('points', '-60,-35 70,-35 60,35 -70,35');
             shapeElement.setAttribute('class', 'shape-parallelogram');
+            break;
+        case 'salida':
+            shapeElement = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+            shapeElement.setAttribute('points', '-60,-35 70,-35 60,35 -70,35');
+            shapeElement.setAttribute('class', 'shape-parallelogram-salida');
             break;
     }
     const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
@@ -81,23 +112,50 @@ function renderShape(data) {
     attachShapeEvents(g);
 }
 function attachShapeEvents(shapeGroup) {
+    shapeGroup.addEventListener('click', function(e) {
+        e.stopPropagation();
+        const shapeId = shapeGroup.getAttribute('data-id');
+        handleConnectClick(shapeId, shapeGroup);
+    });
     shapeGroup.addEventListener('mousedown', startDrag);
     shapeGroup.addEventListener('contextmenu', deleteShape);
     shapeGroup.addEventListener('dblclick', function(e) {
-        console.log('🔧 Función de edición de texto - Próximamente');
+        e.stopPropagation();
+        editShapeText(shapeGroup);
     });
 }
+function editShapeText(shapeGroup) {
+    const shapeId = shapeGroup.getAttribute('data-id');
+    const shape = shapes.find(s => s.id === shapeId);
+    if (!shape) return;
+    const newText = prompt('Editar texto:', shape.text);
+    if (newText !== null && newText.trim() !== '') {
+        shape.text = newText.trim();
+        const textElement = shapeGroup.querySelector('.shape-text');
+        if (textElement) {
+            textElement.textContent = newText.trim();
+        }
+        
+        console.log(`✏️ Texto editado: ${newText}`);
+    }
+}
 function startDrag(e) {
-    if (e.button !== 0) return;
+    if (e.button !== 0) return; 
+    if (connectMode) return; 
+    
     e.preventDefault();
+    e.stopPropagation();
     isDragging = true;
+    
     const shapeGroup = e.currentTarget;
     const transform = shapeGroup.getAttribute('transform');
     const match = transform.match(/translate\(([^,]+),([^)]+)\)/);
     const currentX = parseFloat(match[1]);
     const currentY = parseFloat(match[2]);
+    
     const canvas = document.getElementById('canvas');
     const rect = canvas.getBoundingClientRect();
+    
     dragOffset.x = (e.clientX - rect.left) - currentX;
     dragOffset.y = (e.clientY - rect.top) - currentY;
     shapeGroup.classList.add('selected');
@@ -107,7 +165,6 @@ function startDrag(e) {
         const rect = canvas.getBoundingClientRect();
         const newX = e.clientX - rect.left - dragOffset.x;
         const newY = e.clientY - rect.top - dragOffset.y;
-        
         shapeGroup.setAttribute('transform', `translate(${newX}, ${newY})`);
         const shapeId = shapeGroup.getAttribute('data-id');
         const shape = shapes.find(s => s.id === shapeId);
@@ -115,6 +172,7 @@ function startDrag(e) {
             shape.x = newX;
             shape.y = newY;
         }
+        updateAllArrows();
     };
     const upHandler = () => {
         isDragging = false;
@@ -128,18 +186,22 @@ function startDrag(e) {
 }
 function deleteShape(e) {
     e.preventDefault();
+    e.stopPropagation();
+    
     const shapeGroup = e.currentTarget;
     const shapeId = shapeGroup.getAttribute('data-id');
+    
     if (confirm('¿Eliminar esta figura del diagrama?')) {
+        deleteArrowsForShape(shapeId);
         shapes = shapes.filter(s => s.id !== shapeId);
         shapeGroup.remove();
-        
+        updateStats();
         console.log(`🗑️ Figura eliminada: ${shapeId}`);
     }
 }
 function clearAllShapes() {
     if (shapes.length === 0) {
-        alert('El canvas ya está vacío');
+        showAlert('El canvas ya está vacío', 'error');
         return;
     }
     
@@ -147,14 +209,19 @@ function clearAllShapes() {
         shapes = [];
         shapesLayer.innerHTML = '';
         shapeIdCounter = 0;
+        clearAllArrows();
+        updateStats();
         console.log('🧹 Canvas limpiado');
     }
 }
 function getAllShapes() {
     return shapes;
 }
+function getShapeById(shapeId) {
+    return shapes.find(s => s.id === shapeId) || null;
+}
 function loadShapes(shapesData) {
-    clearAllShapes();
+    shapes = [];
     shapesLayer.innerHTML = '';
     
     shapesData.forEach(shapeData => {
@@ -163,6 +230,8 @@ function loadShapes(shapesData) {
     });
     
     shapeIdCounter = shapes.length;
+    updateStats();
     console.log(`📥 Cargadas ${shapes.length} figuras`);
 }
+
 console.log('✅ shapes.js cargado');

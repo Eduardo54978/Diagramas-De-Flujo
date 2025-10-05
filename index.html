@@ -11,56 +11,97 @@
 <body>
     <div class="container">
         <div class="toolbar">
-            <h2><i class="fa fa-pencil"></i> Herramientas</h2>
-            <h3 style="margin-bottom: 10px; color: #666;">Figuras</h3>
-            <div class="shape-palette">
-                <button class="shape-btn" data-shape="inicio">
-                    <i class="fa fa-circle"></i>
-                    <span>Inicio</span>
-                </button>
-                <button class="shape-btn" data-shape="proceso">
-                    <i class="fa fa-square"></i>
-                    <span>Proceso</span>
-                </button>
-                <button class="shape-btn" data-shape="decision">
-                    <i class="fa fa-diamond"></i>
-                    <span>Decisión</span>
-                </button>
-                <button class="shape-btn" data-shape="entrada">
-                    <i class="fa fa-sign-in"></i>
-                    <span>Entrada</span>
-                </button>
-                <button class="shape-btn" data-shape="salida">
-                    <i class="fa fa-sign-out"></i>
-                    <span>Salida</span>
-                </button>
-                <button class="shape-btn" data-shape="fin">
-                    <i class="fa fa-circle-o"></i>
-                    <span>Fin</span>
-                </button>
+            <h2><i class="fa fa-pencil"></i> Figuras</h2>
+            <div class="shape-palette-svg">
+                <div class="shape-icon" data-shape="inicio" title="Inicio">
+                    <svg viewBox="0 0 120 80" class="icon-svg">
+                        <ellipse cx="60" cy="40" rx="55" ry="35" 
+                                 fill="#2ecc71" stroke="#27ae60" stroke-width="3"/>
+                        <text x="60" y="48" text-anchor="middle" 
+                              fill="white" font-size="16" font-weight="bold">INICIO</text>
+                    </svg>
+                </div>
+                <div class="shape-icon" data-shape="proceso" title="Proceso">
+                    <svg viewBox="0 0 120 80" class="icon-svg">
+                        <rect x="10" y="15" width="100" height="50" 
+                              fill="#3498db" stroke="#2980b9" stroke-width="3"/>
+                        <text x="60" y="48" text-anchor="middle" 
+                              fill="white" font-size="14" font-weight="bold">PROCESO</text>
+                    </svg>
+                </div>
+                <div class="shape-icon" data-shape="decision" title="Decisión">
+                    <svg viewBox="0 0 120 80" class="icon-svg">
+                        <polygon points="60,10 110,40 60,70 10,40" 
+                                 fill="#e74c3c" stroke="#c0392b" stroke-width="3"/>
+                        <text x="60" y="45" text-anchor="middle" 
+                              fill="white" font-size="12" font-weight="bold">¿...?</text>
+                    </svg>
+                </div>
+                <div class="shape-icon" data-shape="entrada" title="Entrada">
+                    <svg viewBox="0 0 120 80" class="icon-svg">
+                        <polygon points="20,15 110,15 100,65 10,65" 
+                                 fill="#f39c12" stroke="#d68910" stroke-width="3"/>
+                        <text x="60" y="48" text-anchor="middle" 
+                              fill="white" font-size="13" font-weight="bold">ENTRADA</text>
+                    </svg>
+                </div>
+                <div class="shape-icon" data-shape="salida" title="Salida">
+                    <svg viewBox="0 0 120 80" class="icon-svg">
+                        <polygon points="10,15 100,15 110,65 20,65" 
+                                 fill="#9b59b6" stroke="#8e44ad" stroke-width="3"/>
+                        <text x="60" y="48" text-anchor="middle" 
+                              fill="white" font-size="14" font-weight="bold">SALIDA</text>
+                    </svg>
+                </div>
+                <div class="shape-icon" data-shape="fin" title="Fin">
+                    <svg viewBox="0 0 120 80" class="icon-svg">
+                        <ellipse cx="60" cy="40" rx="55" ry="35" 
+                                 fill="#34495e" stroke="#2c3e50" stroke-width="3"/>
+                        <text x="60" y="48" text-anchor="middle" 
+                              fill="white" font-size="16" font-weight="bold">FIN</text>
+                    </svg>
+                </div>
             </div>
-
-            <h3 style="margin-bottom: 10px; color: #666;">Acciones</h3>
+            <div class="connection-mode">
+                <h3>🔗 Conexiones</h3>
+                <button class="mode-btn" id="connectModeBtn">
+                    <i class="fa fa-arrows"></i>
+                    <span>Modo Conectar</span>
+                </button>
+                <p class="hint">Click en figura origen, luego en destino</p>
+            </div>
             <div class="actions">
+                <button class="action-btn" id="downloadBtn">
+                    <i class="fa fa-download"></i> Descargar .JSON
+                </button>
                 <button class="action-btn" id="saveBtn">
-                    <i class="fa fa-save"></i> Guardar Diagrama
+                    <i class="fa fa-save"></i> Guardar
                 </button>
                 <button class="action-btn" id="loadBtn">
-                    <i class="fa fa-folder-open"></i> Cargar Diagrama
-                </button>
-                <button class="action-btn" id="exportBtn">
-                    <i class="fa fa-download"></i> Exportar JSON
+                    <i class="fa fa-folder-open"></i> Cargar
                 </button>
                 <button class="action-btn danger" id="clearBtn">
-                    <i class="fa fa-trash"></i> Limpiar Canvas
+                    <i class="fa fa-trash"></i> Limpiar
                 </button>
             </div>
-            <div class="info-panel">
-                <h3>ℹ️ Instrucciones</h3>
-                <p>• Click en una figura del panel<br>
-                • Click en el canvas para colocarla<br>
-                • Arrastra las figuras para moverlas<br>
-                • Click derecho para eliminar</p>
+            <div class="stats-panel">
+                <h3>📊 Estadísticas</h3>
+                <div class="stat-item">
+                    <span>Figuras:</span>
+                    <strong id="shapeCount">0</strong>
+                </div>
+                <div class="stat-item">
+                    <span>Conexiones:</span>
+                    <strong id="arrowCount">0</strong>
+                </div>
+                <div class="stat-item">
+                    <span>Inicio:</span>
+                    <strong id="startCount">0</strong>
+                </div>
+                <div class="stat-item">
+                    <span>Fin:</span>
+                    <strong id="endCount">0</strong>
+                </div>
             </div>
         </div>
         <div class="canvas-container">
@@ -69,6 +110,10 @@
                     <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
                         <path d="M 20 0 L 0 0 0 20" class="grid-pattern"/>
                     </pattern>
+                    <marker id="arrowhead" markerWidth="10" markerHeight="10" 
+                            refX="9" refY="3" orient="auto">
+                        <polygon points="0 0, 10 3, 0 6" fill="#34495e"/>
+                    </marker>
                 </defs>
                 <rect width="100%" height="100%" fill="url(#grid)"/>
                 <g id="arrows-layer"></g>
@@ -77,6 +122,7 @@
         </div>
     </div>
     <script src="js/storage.js"></script>
+    <script src="js/arrows.js"></script>
     <script src="js/shapes.js"></script>
     <script src="js/app.js"></script>
 </body>
