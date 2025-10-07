@@ -2,15 +2,12 @@ const canvas = document.getElementById('canvas');
 const shapeIcons = document.querySelectorAll('.shape-icon');
 const connectModeBtn = document.getElementById('connectModeBtn');
 const downloadBtn = document.getElementById('downloadBtn');
-const saveBtn = document.getElementById('saveBtn');
-const loadBtn = document.getElementById('loadBtn');
-const clearBtn = document.getElementById('clearBtn');
 function initApp() {
     console.log('🚀 Iniciando Editor de Diagramas de Flujo v2.0...');
     
     setupShapeIcons();
     setupCanvasEvents();
-    setupActionButtons();
+document.getElementById('downloadBtn').addEventListener('click', exportDiagramToJSON);
     updateStats();   
     console.log('✅ Aplicación iniciada correctamente');
     console.log('📋 Funcionalidades DÍA 2:');
@@ -47,37 +44,6 @@ function setupCanvasEvents() {
         const y = e.clientY - rect.top;
         
         createShape(selectedShapeType, x, y);
-    });
-}
-function setupActionButtons() {
-    connectModeBtn.addEventListener('click', function() {
-        toggleConnectMode();
-    });
-    downloadBtn.addEventListener('click', function() {
-        exportDiagramToJSON();
-    });
-    saveBtn.addEventListener('click', function() {
-        const shapes = getAllShapes();
-        const arrows = getAllArrows();
-        
-        if (shapes.length === 0) {
-            showAlert('No hay figuras para guardar', 'error');
-            return;
-        }
-        
-        const name = prompt('Nombre del diagrama:', `Diagrama_${new Date().toLocaleDateString()}`);
-        
-        if (name) {
-            if (saveDiagram(name, { shapes, arrows })) {
-                showAlert(`Diagrama "${name}" guardado correctamente`, 'success');
-            }
-        }
-    });
-    loadBtn.addEventListener('click', function() {
-        showSavedDiagrams();
-    });
-    clearBtn.addEventListener('click', function() {
-        clearAllShapes();
     });
 }
 function exportDiagramToJSON() {

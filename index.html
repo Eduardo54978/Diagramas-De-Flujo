@@ -70,41 +70,13 @@
                 </button>
                 <p class="hint">Click en figura origen, luego en destino</p>
             </div>
-            <div class="actions">
-                <button class="action-btn" id="downloadBtn">
-                    <i class="fa fa-download"></i> Descargar .JSON
-                </button>
-                <button class="action-btn" id="saveBtn">
-                    <i class="fa fa-save"></i> Guardar
-                </button>
-                <button class="action-btn" id="loadBtn">
-                    <i class="fa fa-folder-open"></i> Cargar
-                </button>
-                <button class="action-btn danger" id="clearBtn">
-                    <i class="fa fa-trash"></i> Limpiar
-                </button>
-            </div>
-            <div class="stats-panel">
-                <h3>📊 Estadísticas</h3>
-                <div class="stat-item">
-                    <span>Figuras:</span>
-                    <strong id="shapeCount">0</strong>
-                </div>
-                <div class="stat-item">
-                    <span>Conexiones:</span>
-                    <strong id="arrowCount">0</strong>
-                </div>
-                <div class="stat-item">
-                    <span>Inicio:</span>
-                    <strong id="startCount">0</strong>
-                </div>
-                <div class="stat-item">
-                    <span>Fin:</span>
-                    <strong id="endCount">0</strong>
-                </div>
-            </div>
-        </div>
-        <div class="canvas-container">
+<div class="canvas-container">
+    <div class="download-button-container">
+        <button id="downloadBtn" class="download-btn">
+            <i class="fa fa-download"></i> Descargar .JSON
+        </button>
+    </div>
+           <div class="canvas-container">
             <svg id="canvas">
                 <defs>
                     <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
