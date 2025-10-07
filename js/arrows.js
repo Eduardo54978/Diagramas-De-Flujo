@@ -144,9 +144,9 @@ function handleConnectClick(shapeId, shapeElement) {
             let label = '';
             
             if (fromShapeData && fromShapeData.type === 'decision') {
-                label = prompt('Etiqueta de la flecha (ej: Sí, No):', '');
-            }
-            
+    label = prompt('¿Esta flecha es Sí o No?', 'Sí');
+    if (label === null) label = ''; 
+}
             createArrow(sourceShape, shapeId, label || '');
             showAlert('Conexión creada exitosamente', 'success');
         }

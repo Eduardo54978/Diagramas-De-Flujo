@@ -1,7 +1,7 @@
 const canvas = document.getElementById('canvas');
 const shapeIcons = document.querySelectorAll('.shape-icon');
 const connectModeBtn = document.getElementById('connectModeBtn');
-const downloadBtn = document.getElementById('downloadBtn');
+downloadBtn.addEventListener('click', exportDiagramToJSON);
 function initApp() {
     console.log('🚀 Iniciando Editor de Diagramas de Flujo v2.0...');
     
