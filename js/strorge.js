@@ -123,29 +123,42 @@ function exportToJSON(data, filename = null) {
     }
 }
 function importFromJSON(file) {
+    if (!file.name.endsWith('.json')) {
+        showAlert('Solo se permiten archivos .JSON', 'error');
+        return;
+    }    
     const reader = new FileReader();
     reader.onload = function(e) {
         try {
             const data = JSON.parse(e.target.result);
-            if (data.diagram && data.diagram.shapes) {
-                loadShapes(data.diagram.shapes);
-                if (data.diagram.arrows) {
-                    setTimeout(() => {
-                        loadArrows(data.diagram.arrows);
-                    }, 100);
-                }
-                
-                updateStats();
-                console.log('📤 Diagrama importado correctamente');
-                alert(`Diagrama importado:\n${data.diagram.shapes.length} figuras\n${data.diagram.arrows?.length || 0} flechas`);
-            } else {
-                throw new Error('Formato de archivo inválido');
+            if (!data.diagram || !data.diagram.shapes) {
+                throw new Error('Formato inválido');
             }
+            if (shapes.length > 0) {
+                if (!confirm('¿Importar archivo? Se perderá el diagrama actual.')) {
+                    return;
+                }
+            }
+            clearAllShapes();
+            loadShapes(data.diagram.shapes);
+            if (data.diagram.arrows && data.diagram.arrows.length > 0) {
+                setTimeout(() => {
+                    loadArrows(data.diagram.arrows);
+                    updateStats();
+                }, 150);
+            }
+            
+            showAlert(`✅ Importado: ${data.diagram.shapes.length} figuras`, 'success');
+            console.log('📤 Diagrama importado correctamente');
             
         } catch (error) {
             console.error('❌ Error al importar:', error);
-            alert('Error al importar. Verifica que sea un archivo JSON válido del editor.');
+            showAlert('Archivo JSON inválido o corrupto', 'error');
         }
+    };
+    
+    reader.onerror = function() {
+        showAlert('Error al leer el archivo', 'error');
     };
     
     reader.readAsText(file);

@@ -374,3 +374,25 @@ body {
     background: #764ba2;
     transform: translateY(-2px);
 }
+.btn-import-right {
+    position: absolute;
+    top: 60px;
+    right: 15px;
+    background: #2ecc71;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-import-right:hover {
+    background: #27ae60;
+    transform: translateY(-2px);
+}

@@ -128,14 +128,24 @@ function editShapeText(shapeGroup) {
     const shapeId = shapeGroup.getAttribute('data-id');
     const shape = shapes.find(s => s.id === shapeId);
     if (!shape) return;
-    const newText = prompt('Editar texto:', shape.text);
-    if (newText !== null && newText.trim() !== '') {
-        shape.text = newText.trim();
+    let newText = prompt(`Editar texto de ${shape.type.toUpperCase()}:`, shape.text);
+    if (newText !== null) {
+        newText = newText.trim();
+        if (newText === '') {
+            showAlert('El texto no puede estar vacío', 'error');
+            return;
+        }
+        if (newText.length > 30) {
+            showAlert('Texto muy largo (máximo 30 caracteres)', 'error');
+            return;
+        }
+        shape.text = newText;
         const textElement = shapeGroup.querySelector('.shape-text');
         if (textElement) {
-            textElement.textContent = newText.trim();
+            textElement.textContent = newText;
         }
         
+        showAlert('Texto actualizado correctamente', 'success');
         console.log(`✏️ Texto editado: ${newText}`);
     }
 }
