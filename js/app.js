@@ -21,6 +21,7 @@ function initApp() {
     console.log('   ✓ Exportar con validación');
 }
 function setupButtons() {
+document.getElementById('commentBtn').addEventListener('click', toggleCommentMode);
     downloadBtn.addEventListener('click', exportDiagramToJSON);
     document.getElementById('importBtn').addEventListener('click', function() {
         document.getElementById('importInput').click();
@@ -58,6 +59,15 @@ function setupShapeIcons() {
 }
 function setupCanvasEvents() {
     canvas.addEventListener('click', function(e) {
+        const rect = canvas.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        if (commentMode) {
+            e.stopPropagation();
+            createComment(x, y);
+            return;
+        }
+        
         if (connectMode) return;
         if (e.target.closest('.shape')) return;
         
@@ -65,10 +75,6 @@ function setupCanvasEvents() {
             showAlert('Primero selecciona un tipo de figura', 'error');
             return;
         }
-        
-        const rect = canvas.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
         
         createShape(selectedShapeType, x, y);
     });

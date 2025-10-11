@@ -396,3 +396,59 @@ body {
     background: #27ae60;
     transform: translateY(-2px);
 }
+.btn-comment-right {
+    position: absolute;
+    top: 105px;
+    right: 15px;
+    background: #f39c12;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-comment-right:hover {
+    background: #e67e22;
+    transform: translateY(-2px);
+}
+
+/* Cuadros de comentarios en el canvas */
+.comment-box {
+    cursor: move;
+}
+
+.comment-rect {
+    fill: #fff9e6;
+    stroke: #f39c12;
+    stroke-width: 2;
+    stroke-dasharray: 5,5;
+}
+
+.comment-text {
+    fill: #333;
+    font-size: 12px;
+    font-family: monospace;
+    pointer-events: none;
+}
+
+.comment-title {
+    fill: #f39c12;
+    font-size: 11px;
+    font-weight: bold;
+    font-family: sans-serif;
+}
+
+/* Líneas que conectan comentarios con figuras */
+.comment-line {
+    stroke: #f39c12;
+    stroke-width: 1.5;
+    stroke-dasharray: 5,3;
+    fill: none;
+}

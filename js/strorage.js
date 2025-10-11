@@ -101,7 +101,8 @@ function exportToJSON(data, filename = null) {
             },
             diagram: {
                 shapes: shapes,
-                arrows: arrows
+                arrows: arrows,
+                comments: getAllComments()
             }
         };
         const jsonString = JSON.stringify(exportData, null, 2);
