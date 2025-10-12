@@ -396,59 +396,161 @@ body {
     background: #27ae60;
     transform: translateY(-2px);
 }
-.btn-comment-right {
+.btn-comment-doc {
     position: absolute;
     top: 105px;
     right: 15px;
-    background: #f39c12;
-    color: white;
-    border: none;
-    padding: 10px 20px;
+    background: white;
+    color: #333;
+    border: 2px solid #666;
+    padding: 8px 12px;
     border-radius: 8px;
     cursor: pointer;
-    font-weight: bold;
+    font-size: 20px;
     box-shadow: 0 4px 10px rgba(0,0,0,0.2);
     z-index: 1000;
-    display: flex;
-    align-items: center;
-    gap: 8px;
 }
 
-.btn-comment-right:hover {
-    background: #e67e22;
+.btn-comment-bucle {
+    position: absolute;
+    top: 105px;
+    right: 65px;
+    background: #e3f2fd;
+    color: #2196f3;
+    border: 2px solid #2196f3;
+    padding: 8px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 20px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    z-index: 1000;
+}
+
+.btn-comment-func {
+    position: absolute;
+    top: 105px;
+    right: 115px;
+    background: #fff3e0;
+    color: #ff9800;
+    border: 2px solid #ff9800;
+    padding: 8px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 20px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    z-index: 1000;
+}
+
+.btn-comment-doc:hover,
+.btn-comment-bucle:hover,
+.btn-comment-func:hover {
     transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+}
+/* Panel de documentación */
+.docs-panel {
+    margin-top: 20px;
 }
 
-/* Cuadros de comentarios en el canvas */
-.comment-box {
-    cursor: move;
-}
-
-.comment-rect {
-    fill: #fff9e6;
-    stroke: #f39c12;
-    stroke-width: 2;
-    stroke-dasharray: 5,5;
-}
-
-.comment-text {
-    fill: #333;
-    font-size: 12px;
-    font-family: monospace;
-    pointer-events: none;
-}
-
-.comment-title {
-    fill: #f39c12;
-    font-size: 11px;
+.docs-toggle-btn {
+    width: 100%;
+    background: #34495e;
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
     font-weight: bold;
-    font-family: sans-serif;
 }
 
-/* Líneas que conectan comentarios con figuras */
-.comment-line {
-    stroke: #f39c12;
-    stroke-width: 1.5;
-    stroke-dasharray: 5,3;
-    fill: none;
+.docs-toggle-btn:hover {
+    background: #2c3e50;
+}
+
+/* Panel flotante */
+.docs-floating-panel {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 600px;
+    max-height: 80vh;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+    z-index: 2000;
+    display: flex;
+    flex-direction: column;
+}
+
+.docs-header {
+    background: #34495e;
+    color: white;
+    padding: 15px 20px;
+    border-radius: 15px 15px 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.docs-header h3 {
+    margin: 0;
+    font-size: 18px;
+}
+
+.docs-close {
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+}
+
+.docs-close:hover {
+    color: #e74c3c;
+}
+
+.docs-content {
+    padding: 20px;
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+#docsText {
+    width: 100%;
+    min-height: 400px;
+    padding: 15px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    resize: vertical;
+}
+
+#docsText:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+.docs-save-btn {
+    margin-top: 15px;
+    background: #2ecc71;
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.docs-save-btn:hover {
+    background: #27ae60;
 }

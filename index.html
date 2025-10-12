@@ -22,7 +22,6 @@
                               fill="white" font-size="16" font-weight="bold">INICIO</text>
                     </svg>
                 </div>
-                
                 <div class="shape-icon" data-shape="proceso" title="Proceso">
                     <svg viewBox="0 0 120 80" class="icon-svg">
                         <rect x="10" y="15" width="100" height="50" 
@@ -31,7 +30,6 @@
                               fill="white" font-size="14" font-weight="bold">PROCESO</text>
                     </svg>
                 </div>
-                
                 <div class="shape-icon" data-shape="decision" title="Decisión">
                     <svg viewBox="0 0 120 80" class="icon-svg">
                         <polygon points="60,10 110,40 60,70 10,40" 
@@ -40,7 +38,6 @@
                               fill="white" font-size="12" font-weight="bold">¿...?</text>
                     </svg>
                 </div>
-                
                 <div class="shape-icon" data-shape="entrada" title="Entrada">
                     <svg viewBox="0 0 120 80" class="icon-svg">
                         <polygon points="20,15 110,15 100,65 10,65" 
@@ -49,7 +46,6 @@
                               fill="white" font-size="13" font-weight="bold">ENTRADA</text>
                     </svg>
                 </div>
-                
                 <div class="shape-icon" data-shape="salida" title="Salida">
                     <svg viewBox="0 0 120 80" class="icon-svg">
                         <polygon points="10,15 100,15 110,65 20,65" 
@@ -58,7 +54,6 @@
                               fill="white" font-size="14" font-weight="bold">SALIDA</text>
                     </svg>
                 </div>
-                
                 <div class="shape-icon" data-shape="fin" title="Fin">
                     <svg viewBox="0 0 120 80" class="icon-svg">
                         <ellipse cx="60" cy="40" rx="55" ry="35" 
@@ -68,7 +63,6 @@
                     </svg>
                 </div>
             </div>
-
             <div class="connection-mode">
                 <h3>🔗 Conexiones</h3>
                 <button class="mode-btn" id="connectModeBtn">
@@ -77,17 +71,21 @@
                 </button>
                 <p class="hint">Click en figura origen, luego en destino</p>
             </div>
+            <div class="docs-panel">
+                <button class="docs-toggle-btn" id="docsBtn">
+                    📄 Documentación
+                </button>
+            </div>
         </div>
         <div class="canvas-container">
             <button id="downloadBtn" class="btn-download-right">
-                <i class="fa fa-download"></i> .JSON
+                <i class="fa fa-download"></i> Descargar
             </button>
+            
             <button id="importBtn" class="btn-import-right">
                 <i class="fa fa-upload"></i> Importar
             </button>
-<button id="commentBtn" class="btn-comment-right">
-    <i class="fa fa-comment"></i> Comentario
-</button>
+            
             <svg id="canvas">
                 <defs>
                     <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
@@ -104,8 +102,17 @@
             </svg>
         </div>
     </div>
+    <div class="docs-floating-panel" id="docsPanel" style="display: none;">
+        <div class="docs-header">
+            <h3>📚 Documentación del Código</h3>
+            <button class="docs-close" id="docsClose">✕</button>
+        </div>
+        <div class="docs-content">
+            <textarea id="docsText" placeholder="Escribe la documentación de tus funciones aquí..."></textarea>
+            <button class="docs-save-btn" id="docsSave">💾 Guardar</button>
+        </div>
+    </div>
     <script src="js/storage.js"></script>
-    <script src="js/comments.js"></script>
     <script src="js/arrows.js"></script>
     <script src="js/shapes.js"></script>
     <script src="js/app.js"></script>

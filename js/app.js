@@ -27,6 +27,34 @@ document.getElementById('commentBtn').addEventListener('click', toggleCommentMod
         document.getElementById('importInput').click();
     });
     connectModeBtn.addEventListener('click', toggleConnectMode);
+document.getElementById('commentDocBtn').addEventListener('click', () => {
+    activateCommentMode('documento');
+});
+
+document.getElementById('commentBucleBtn').addEventListener('click', () => {
+    activateCommentMode('bucle');
+});
+
+document.getElementById('commentFuncBtn').addEventListener('click', () => {
+    activateCommentMode('funcion');
+});
+document.getElementById('docsBtn').addEventListener('click', function() {
+    document.getElementById('docsPanel').style.display = 'flex';
+    const savedDocs = localStorage.getItem('flowchart_docs');
+    if (savedDocs) {
+        document.getElementById('docsText').value = savedDocs;
+    }
+});
+
+document.getElementById('docsClose').addEventListener('click', function() {
+    document.getElementById('docsPanel').style.display = 'none';
+});
+
+document.getElementById('docsSave').addEventListener('click', function() {
+    const docsText = document.getElementById('docsText').value;
+    localStorage.setItem('flowchart_docs', docsText);
+    showAlert('Documentación guardada', 'success');
+});
 }
 function setupImportInput() {
     const importInput = document.createElement('input');
