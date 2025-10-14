@@ -114,6 +114,7 @@ function toggleConnectMode() {
         btn.classList.remove('active');
         canvas.classList.remove('connect-mode');
         sourceShape = null;
+        
         document.querySelectorAll('.shape').forEach(s => {
             s.classList.remove('connect-source');
         });

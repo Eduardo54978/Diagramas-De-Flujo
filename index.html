@@ -68,24 +68,25 @@
                     </svg>
                 </div>
             </div>
-            <div class="comment-types">
-                <h3>💬 Comentarios</h3>
-                <div class="comment-btns">
-                    <button class="comment-type-btn" data-type="funcion" title="Comentario de Función">
-                        <i class="fa fa-cog"></i> Función
-                    </button>
-                    <button class="comment-type-btn" data-type="bucle" title="Comentario de Bucle">
-                        <i class="fa fa-repeat"></i> Bucle
-                    </button>
-                    <button class="comment-type-btn" data-type="decision" title="Comentario de Decisión">
-                        <i class="fa fa-question"></i> Decisión
-                    </button>
-                    <button class="comment-type-btn" data-type="general" title="Comentario General">
-                        <i class="fa fa-file-text"></i> General
-                    </button>
-                </div>
-            </div>
-
+<div class="comment-types">
+    <button class="comment-main-btn" id="commentMainBtn">
+        💬 Comentarios
+    </button>
+    <div class="comment-submenu" id="commentSubmenu" style="display: none;">
+        <button class="comment-type-btn" data-type="funcion">
+            <i class="fa fa-cog"></i> Función
+        </button>
+        <button class="comment-type-btn" data-type="bucle">
+            <i class="fa fa-repeat"></i> Bucle
+        </button>
+        <button class="comment-type-btn" data-type="decision">
+            <i class="fa fa-question"></i> Decisión
+        </button>
+        <button class="comment-type-btn" data-type="general">
+            <i class="fa fa-file-text"></i> General
+        </button>
+    </div>
+</div>
             <div class="connection-mode">
                 <h3>🔗 Conexiones</h3>
                 <button class="mode-btn" id="connectModeBtn">

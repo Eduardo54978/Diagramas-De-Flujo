@@ -21,33 +21,48 @@ function initApp() {
     console.log('   ✓ Exportar con validación');
 }
 function setupButtons() {
-    downloadBtn.addEventListener('click', exportDiagramToJSON);
-    document.getElementById('importBtn').addEventListener('click', function() {
-        document.getElementById('importInput').click();
+    if (downloadBtn) {
+        downloadBtn.addEventListener('click', exportDiagramToJSON);
+    }
+    const importBtn = document.getElementById('importBtn');
+    if (importBtn) {
+        importBtn.addEventListener('click', function() {
+            document.getElementById('importInput').click();
+        });
+    }
+    if (connectModeBtn) {
+        connectModeBtn.addEventListener('click', toggleConnectMode);
+    }
+    const commentMainBtn = document.getElementById('commentMainBtn');
+    const commentSubmenu = document.getElementById('commentSubmenu');
+    if (commentMainBtn) {
+        commentMainBtn.addEventListener('click', function() {
+            if (commentSubmenu.style.display === 'none') {
+                commentSubmenu.style.display = 'grid';
+            } else {
+                commentSubmenu.style.display = 'none';
+            }
+        });
+    }
+    const commentBtns = document.querySelectorAll('.comment-type-btn');
+    commentBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            if (this.classList.contains('active')) {
+                this.classList.remove('active');
+                commentModeActive = false;
+                selectedCommentType = null;
+                document.getElementById('canvas').style.cursor = 'crosshair';
+                commentSubmenu.style.display = 'none';
+                console.log('⚪ Modo comentario desactivado');
+                return;
+            }
+            commentBtns.forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            const type = this.dataset.type;
+            activateCommentMode(type);
+            commentSubmenu.style.display = 'none';
+        });
     });
-    connectModeBtn.addEventListener('click', toggleConnectMode);
-    document.getElementById('docsBtn').addEventListener('click', function() {
-        document.getElementById('docsPanel').style.display = 'flex';
-        const savedDocs = localStorage.getItem('flowchart_docs');
-        if (savedDocs) {
-            document.getElementById('docsText').value = savedDocs;
-        }
-    });
-    document.getElementById('docsClose').addEventListener('click', function() {
-        document.getElementById('docsPanel').style.display = 'none';
-    });
-    document.getElementById('docsSave').addEventListener('click', function() {
-        const docsText = document.getElementById('docsText').value;
-        localStorage.setItem('flowchart_docs', docsText);
-        showAlert('Comentarios guardados', 'success');
-    });
-    document.querySelectorAll('.comment-type-btn').forEach(btn => {
-    btn.addEventListener('click', function() {
-        document.querySelectorAll('.comment-type-btn').forEach(b => b.classList.remove('active'));
-        this.classList.add('active');
-        activateCommentMode(this.dataset.type);
-    });
-});
 }
 function setupImportInput() {
     const importInput = document.createElement('input');
@@ -68,6 +83,12 @@ function setupImportInput() {
 function setupShapeIcons() {
     shapeIcons.forEach(icon => {
         icon.addEventListener('click', function() {
+            if (this.classList.contains('selected')) {
+                this.classList.remove('selected');
+                selectedShapeType = null;
+                console.log('⚪ Selección cancelada');
+                return;
+            }
             shapeIcons.forEach(i => {
                 i.classList.remove('selected');
             });
@@ -78,33 +99,21 @@ function setupShapeIcons() {
         });
     });
 }
-
 function setupCanvasEvents() {
-        if (commentModeActive) {
-            const rect = canvas.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            createCommentBox(x, y);
-            return;
-        }
     canvas.addEventListener('click', function(e) {
         const rect = canvas.getBoundingClientRect();
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
-        if (commentMode) {
-            e.stopPropagation();
-            createComment(x, y);
+        if (commentModeActive) {
+            createCommentBox(x, y);
             return;
         }
-        
         if (connectMode) return;
         if (e.target.closest('.shape')) return;
-        
         if (!selectedShapeType) {
             showAlert('Primero selecciona un tipo de figura', 'error');
             return;
         }
-        
         createShape(selectedShapeType, x, y);
     });
 }
