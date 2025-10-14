@@ -447,7 +447,6 @@ body {
     transform: translateY(-2px);
     box-shadow: 0 6px 15px rgba(0,0,0,0.3);
 }
-/* Panel de documentación */
 .docs-panel {
     margin-top: 20px;
 }
@@ -468,7 +467,6 @@ body {
     background: #2c3e50;
 }
 
-/* Panel flotante */
 .docs-floating-panel {
     position: fixed;
     top: 50%;
@@ -553,4 +551,77 @@ body {
 
 .docs-save-btn:hover {
     background: #27ae60;
+}
+.comment-types {
+    margin-bottom: 20px;
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 10px;
+}
+
+.comment-types h3 {
+    color: #667eea;
+    font-size: 16px;
+    margin-bottom: 10px;
+}
+
+.comment-btns {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+}
+
+.comment-type-btn {
+    background: white;
+    border: 2px solid #667eea;
+    color: #667eea;
+    padding: 10px 8px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 11px;
+    font-weight: bold;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+}
+
+.comment-type-btn:hover {
+    background: #667eea;
+    color: white;
+    transform: translateY(-2px);
+}
+
+.comment-type-btn.active {
+    background: #667eea;
+    color: white;
+}
+.comment-box {
+    cursor: move;
+}
+
+.comment-rect {
+    fill: #fffbf0;
+    stroke: #f39c12;
+    stroke-width: 2;
+}
+
+.comment-line-to-shape {
+    stroke: #f39c12;
+    stroke-width: 2;
+    stroke-dasharray: 5,3;
+    fill: none;
+}
+
+.comment-title {
+    fill: #f39c12;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.comment-text {
+    fill: #333;
+    font-size: 11px;
+    font-family: monospace;
 }

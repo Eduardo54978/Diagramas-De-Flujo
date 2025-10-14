@@ -21,39 +21,32 @@ function initApp() {
     console.log('   ✓ Exportar con validación');
 }
 function setupButtons() {
-document.getElementById('commentBtn').addEventListener('click', toggleCommentMode);
     downloadBtn.addEventListener('click', exportDiagramToJSON);
     document.getElementById('importBtn').addEventListener('click', function() {
         document.getElementById('importInput').click();
     });
     connectModeBtn.addEventListener('click', toggleConnectMode);
-document.getElementById('commentDocBtn').addEventListener('click', () => {
-    activateCommentMode('documento');
-});
-
-document.getElementById('commentBucleBtn').addEventListener('click', () => {
-    activateCommentMode('bucle');
-});
-
-document.getElementById('commentFuncBtn').addEventListener('click', () => {
-    activateCommentMode('funcion');
-});
-document.getElementById('docsBtn').addEventListener('click', function() {
-    document.getElementById('docsPanel').style.display = 'flex';
-    const savedDocs = localStorage.getItem('flowchart_docs');
-    if (savedDocs) {
-        document.getElementById('docsText').value = savedDocs;
-    }
-});
-
-document.getElementById('docsClose').addEventListener('click', function() {
-    document.getElementById('docsPanel').style.display = 'none';
-});
-
-document.getElementById('docsSave').addEventListener('click', function() {
-    const docsText = document.getElementById('docsText').value;
-    localStorage.setItem('flowchart_docs', docsText);
-    showAlert('Documentación guardada', 'success');
+    document.getElementById('docsBtn').addEventListener('click', function() {
+        document.getElementById('docsPanel').style.display = 'flex';
+        const savedDocs = localStorage.getItem('flowchart_docs');
+        if (savedDocs) {
+            document.getElementById('docsText').value = savedDocs;
+        }
+    });
+    document.getElementById('docsClose').addEventListener('click', function() {
+        document.getElementById('docsPanel').style.display = 'none';
+    });
+    document.getElementById('docsSave').addEventListener('click', function() {
+        const docsText = document.getElementById('docsText').value;
+        localStorage.setItem('flowchart_docs', docsText);
+        showAlert('Comentarios guardados', 'success');
+    });
+    document.querySelectorAll('.comment-type-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        document.querySelectorAll('.comment-type-btn').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        activateCommentMode(this.dataset.type);
+    });
 });
 }
 function setupImportInput() {
@@ -85,7 +78,15 @@ function setupShapeIcons() {
         });
     });
 }
+
 function setupCanvasEvents() {
+        if (commentModeActive) {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            createCommentBox(x, y);
+            return;
+        }
     canvas.addEventListener('click', function(e) {
         const rect = canvas.getBoundingClientRect();
         const x = e.clientX - rect.left;
