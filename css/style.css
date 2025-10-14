@@ -646,3 +646,11 @@ body {
     font-size: 11px;
     font-family: monospace;
 }
+.btn-save-db {
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+.btn-save-db:hover {
+    background: #8e44ad !important;
+    transform: translateY(-2px);
+}

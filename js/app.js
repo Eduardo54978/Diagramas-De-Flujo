@@ -4,7 +4,6 @@ const connectModeBtn = document.getElementById('connectModeBtn');
 const downloadBtn = document.getElementById('downloadBtn');
 function initApp() {
     console.log('🚀 Iniciando Editor de Diagramas de Flujo v3.0...');
-    
     setupShapeIcons();
     setupCanvasEvents();
     setupButtons();
@@ -24,6 +23,28 @@ function setupButtons() {
     if (downloadBtn) {
         downloadBtn.addEventListener('click', exportDiagramToJSON);
     }
+    const saveToDbBtn = document.createElement('button');
+    saveToDbBtn.className = 'btn-save-db';
+    saveToDbBtn.innerHTML = '<i class="fa fa-database"></i> Guardar BD';
+    saveToDbBtn.style.cssText = 'position:absolute;top:150px;right:15px;background:#9b59b6;color:white;border:none;padding:10px 20px;border-radius:8px;cursor:pointer;font-weight:bold;z-index:1000;display:flex;align-items:center;gap:8px;';
+    document.querySelector('.canvas-container').appendChild(saveToDbBtn);
+    saveToDbBtn.addEventListener('click', async function() {
+        const shapes = getAllShapes();
+        const arrows = getAllArrows();
+        const comments = getAllComments();
+        
+        if (shapes.length === 0) {
+            showAlert('No hay figuras para guardar', 'error');
+            return;
+        }
+        const name = prompt('Nombre del diagrama:', `Diagrama_${new Date().toLocaleDateString()}`);
+        if (name) {
+            const saved = await saveDiagram(name, { shapes, arrows, comments });
+            if (saved) {
+                showAlert(`✅ Guardado en PouchDB: "${name}"`, 'success');
+            }
+        }
+    });
     const importBtn = document.getElementById('importBtn');
     if (importBtn) {
         importBtn.addEventListener('click', function() {
@@ -120,6 +141,8 @@ function setupCanvasEvents() {
 function exportDiagramToJSON() {
     const shapes = getAllShapes();
     const arrows = getAllArrows();
+    const comments = getAllComments();
+
     
     if (shapes.length === 0) {
         showAlert('No hay figuras para exportar', 'error');
@@ -143,9 +166,10 @@ function exportDiagramToJSON() {
             arrowCount: arrows.length
         },
         diagram: {
-            shapes: shapes,
-            arrows: arrows
-        }
+        shapes: shapes,
+        arrows: arrows,
+        comments: comments
+    }
     };
     
     const jsonString = JSON.stringify(exportData, null, 2);
@@ -282,6 +306,33 @@ function setupKeyboardShortcuts() {
             console.log('⚪ Selección cancelada');
         }
     });
+}
+async function showSavedDiagrams() {
+    const savedDiagrams = await getAllSavedDiagrams();
+    if (savedDiagrams.length === 0) {
+        showAlert('No hay diagramas guardados en PouchDB', 'error');
+        return;
+    }
+    let message = 'Diagramas en PouchDB:\n\n';
+    savedDiagrams.forEach((diagram, index) => {
+        const date = new Date(diagram.createdAt).toLocaleString();
+        message += `${index + 1}. ${diagram.name}\n`;
+        message += `   Figuras: ${diagram.data.shapes?.length || 0} | `;
+        message += `Flechas: ${diagram.data.arrows?.length || 0}\n`;
+        message += `   Fecha: ${date}\n\n`;
+    });
+    message += '\nIngresa el número del diagrama a cargar (0 para cancelar):';   
+    const choice = prompt(message);
+    const index = parseInt(choice) - 1;
+    
+    if (index >= 0 && index < savedDiagrams.length) {
+        const diagram = savedDiagrams[index];
+        
+        if (confirm(`¿Cargar "${diagram.name}"? Se perderá el diagrama actual.`)) {
+            await loadDiagram(diagram._id);
+            showAlert(`Diagrama "${diagram.name}" cargado desde PouchDB`, 'success');
+        }
+    }
 }
 function showWelcomeMessage() {
     console.log('═══════════════════════════════════════════════════');
