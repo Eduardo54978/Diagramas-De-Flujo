@@ -12,7 +12,6 @@ function createShape(type, x, y) {
             return;
         }
     }
-    
     if (type === 'fin') {
         const existingEnd = shapes.find(s => s.type === 'fin');
         if (existingEnd) {
@@ -20,9 +19,7 @@ function createShape(type, x, y) {
             return;
         }
     }
-    
     const shapeId = `shape-${shapeIdCounter++}`;
-    
     const shapeData = {
         id: shapeId,
         type: type,
@@ -30,10 +27,14 @@ function createShape(type, x, y) {
         y: y,
         text: getDefaultText(type)
     };
-    
     shapes.push(shapeData);
     renderShape(shapeData);
     updateStats();
+    if (type === 'decision') {
+        setTimeout(() => {
+            createDecisionArrows(shapeData);
+        }, 100);
+    }
     
     console.log(`✅ Figura creada: ${type} en (${x}, ${y})`);
 }
@@ -49,6 +50,9 @@ function getDefaultText(type) {
     return texts[type] || type.toUpperCase();
 }
 function renderShape(data) {
+    if (data.type === 'temp') {
+        return;
+    }
     const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
     g.setAttribute('class', 'shape');
     g.setAttribute('data-id', data.id);
@@ -110,6 +114,41 @@ function renderShape(data) {
     g.appendChild(text);
     shapesLayer.appendChild(g);
     attachShapeEvents(g);
+}
+function createShape(type, x, y) {
+    if (type === 'inicio') {
+        const existingStart = shapes.find(s => s.type === 'inicio');
+        if (existingStart) {
+            showAlert('⚠️ Solo puede haber UN inicio en el diagrama', 'error');
+            return;
+        }
+    }
+    if (type === 'fin') {
+        const existingEnd = shapes.find(s => s.type === 'fin');
+        if (existingEnd) {
+            showAlert('⚠️ Solo puede haber UN fin en el diagrama', 'error');
+            return;
+        }
+    }
+    const shapeId = `shape-${shapeIdCounter++}`;
+    const shapeData = {
+        id: shapeId,
+        type: type,
+        x: x,
+        y: y,
+        text: getDefaultText(type)
+    };
+    shapes.push(shapeData);
+    renderShape(shapeData);
+    updateStats();
+    
+    if (type === 'decision') {
+        setTimeout(() => {
+            createDecisionArrows(shapeData);
+        }, 100);
+    }
+    
+    console.log(`✅ Figura creada: ${type} en (${x}, ${y})`);
 }
 function attachShapeEvents(shapeGroup) {
     shapeGroup.addEventListener('click', function(e) {
@@ -243,5 +282,52 @@ function loadShapes(shapesData) {
     updateStats();
     console.log(`📥 Cargadas ${shapes.length} figuras`);
 }
-
+function createDecisionArrows(decisionShape) {
+    const yesTargetId = `temp-yes-${Date.now()}`;
+    const noTargetId = `temp-no-${Date.now()}`;
+    
+    // SÍ a la DERECHA
+    const yesX = decisionShape.x + 180;
+    const yesY = decisionShape.y;
+    
+    // NO a la IZQUIERDA
+    const noX = decisionShape.x - 180;
+    const noY = decisionShape.y;
+    
+    // ABAJO solo puntitos
+    const downX = decisionShape.x;
+    const downY = decisionShape.y + 150;
+    
+    const yesTarget = {
+        id: yesTargetId,
+        type: 'temp',
+        x: yesX,
+        y: yesY,
+        text: ''
+    };
+    
+    const noTarget = {
+        id: noTargetId,
+        type: 'temp',
+        x: noX,
+        y: noY,
+        text: ''
+    };
+    
+    const downTarget = {
+        id: `temp-down-${Date.now()}`,
+        type: 'temp',
+        x: downX,
+        y: downY,
+        text: ''
+    };
+    
+    shapes.push(yesTarget, noTarget, downTarget);
+    
+    createArrow(decisionShape.id, yesTargetId, 'Sí');
+    createArrow(decisionShape.id, noTargetId, 'No');
+    createArrow(decisionShape.id, downTarget.id, '');
+    
+    console.log('✅ Flechas Sí/No/Abajo creadas automáticamente');
+}
 console.log('✅ shapes.js cargado');

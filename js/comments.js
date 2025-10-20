@@ -153,6 +153,7 @@ function renderCommentBox(data) {
     
     g.addEventListener('mousedown', startDragComment);
     g.addEventListener('contextmenu', deleteComment);
+    g.addEventListener('dblclick', editComment);
 }
 
 function startDragComment(e) {
@@ -226,6 +227,32 @@ function getAllComments() {
 function clearAllComments() {
     comments = [];
     commentsLayer.innerHTML = '';
+}
+function editComment(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    const g = e.currentTarget;
+    const id = g.getAttribute('data-id');
+    const comment = comments.find(c => c.id === id);
+    
+    if (!comment) return;
+    
+    const newText = prompt(`Editar comentario de ${comment.type.toUpperCase()}:`, comment.text);
+    
+    if (newText !== null && newText.trim() !== '') {
+        comment.text = newText.trim();
+        
+        // Eliminar el comentario visual y volver a renderizarlo
+        g.remove();
+        const line = document.querySelector(`line[data-comment="${id}"]`);
+        if (line) line.remove();
+        
+        renderCommentBox(comment);
+        
+        showAlert('Comentario editado correctamente', 'success');
+        console.log(`✏️ Comentario editado: ${newText}`);
+    }
 }
 
 console.log('✅ comments.js cargado');

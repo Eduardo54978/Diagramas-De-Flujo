@@ -2,8 +2,10 @@ let arrows = [];
 let arrowIdCounter = 0;
 let connectMode = false;
 let sourceShape = null;
+let selectedArrowForReconnect = null;
 
 const arrowsLayer = document.getElementById('arrows-layer');
+
 function createArrow(fromShapeId, toShapeId, label = '') {
     const arrowId = `arrow-${arrowIdCounter++}`;
     
@@ -17,13 +19,13 @@ function createArrow(fromShapeId, toShapeId, label = '') {
     arrows.push(arrowData);
     renderArrow(arrowData);
     
-    console.log(`➡️ Flecha creada: ${fromShapeId} -> ${toShapeId}`);
+    console.log(`➡️ Flecha creada: ${fromShapeId} -> ${toShapeId} (${label})`);
     updateStats();
 }
+
 function renderArrow(data) {
     const fromShape = getShapeById(data.from);
     const toShape = getShapeById(data.to);
-    
     if (!fromShape || !toShape) {
         console.error('❌ Figuras no encontradas para la flecha');
         return;
@@ -40,7 +42,12 @@ function renderArrow(data) {
     line.setAttribute('x2', toPos.x);
     line.setAttribute('y2', toPos.y);
     
+    if (toShape.type === 'temp') {
+        line.setAttribute('stroke-dasharray', '5,5');
+    }
+    
     g.appendChild(line);
+    
     if (data.label) {
         const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
         text.setAttribute('class', 'arrow-label');
@@ -51,6 +58,31 @@ function renderArrow(data) {
     }
     
     arrowsLayer.appendChild(g);
+    
+    // Click en flecha para reconectarla en modo conexión
+    line.addEventListener('click', function(e) {
+        if (connectMode) {
+            e.stopPropagation();
+            if (selectedArrowForReconnect === data.id) {
+                // Deseleccionar
+                selectedArrowForReconnect = null;
+                line.style.stroke = '#34495e';
+                line.style.strokeWidth = '2';
+                console.log('⚪ Flecha deseleccionada');
+            } else {
+                // Seleccionar para reconectar
+                document.querySelectorAll('.arrow').forEach(a => {
+                    a.style.stroke = '#34495e';
+                    a.style.strokeWidth = '2';
+                });
+                selectedArrowForReconnect = data.id;
+                line.style.stroke = '#2ecc71';
+                line.style.strokeWidth = '4';
+                console.log(`📍 Flecha seleccionada para reconectar: ${data.label}`);
+            }
+        }
+    });
+    
     line.addEventListener('contextmenu', function(e) {
         e.preventDefault();
         if (confirm('¿Eliminar esta conexión?')) {
@@ -58,6 +90,7 @@ function renderArrow(data) {
         }
     });
 }
+
 function updateAllArrows() {
     arrows.forEach(arrowData => {
         const arrowGroup = document.querySelector(`[data-id="${arrowData.id}"]`);
@@ -80,6 +113,7 @@ function updateAllArrows() {
         }
     });
 }
+
 function deleteArrow(arrowId) {
     arrows = arrows.filter(a => a.id !== arrowId);
     
@@ -91,6 +125,7 @@ function deleteArrow(arrowId) {
     console.log(`🗑️ Flecha eliminada: ${arrowId}`);
     updateStats();
 }
+
 function deleteArrowsForShape(shapeId) {
     const arrowsToDelete = arrows.filter(a => 
         a.from === shapeId || a.to === shapeId
@@ -100,6 +135,7 @@ function deleteArrowsForShape(shapeId) {
         deleteArrow(arrow.id);
     });
 }
+
 function toggleConnectMode() {
     connectMode = !connectMode;
     const btn = document.getElementById('connectModeBtn');
@@ -109,22 +145,70 @@ function toggleConnectMode() {
         btn.classList.add('active');
         canvas.classList.add('connect-mode');
         sourceShape = null;
-        console.log('🔗 Modo conexión ACTIVADO');
+        selectedArrowForReconnect = null;
+        console.log('🔗 Modo conexión ACTIVADO - Haz clic en flechas para reconectarlas');
     } else {
         btn.classList.remove('active');
         canvas.classList.remove('connect-mode');
         sourceShape = null;
+        selectedArrowForReconnect = null;
         
         document.querySelectorAll('.shape').forEach(s => {
             s.classList.remove('connect-source');
         });
         
+        document.querySelectorAll('.arrow').forEach(a => {
+            a.style.stroke = '#34495e';
+            a.style.strokeWidth = '2';
+        });
+        
         console.log('🔗 Modo conexión DESACTIVADO');
     }
 }
+
 function handleConnectClick(shapeId, shapeElement) {
     if (!connectMode) return;
     
+    // Si hay una flecha seleccionada, conectarla a esta figura
+    if (selectedArrowForReconnect) {
+        const arrowData = arrows.find(a => a.id === selectedArrowForReconnect);
+        if (!arrowData) {
+            selectedArrowForReconnect = null;
+            return;
+        }
+        
+        // No puede conectarse a la misma figura origen
+        if (arrowData.from === shapeId) {
+            showAlert('No puedes conectar a la misma figura origen', 'error');
+            return;
+        }
+        
+        // No puede conectarse a un target temporal
+        const targetShape = getShapeById(shapeId);
+        if (targetShape && targetShape.type === 'temp') {
+            showAlert('No puedes conectar a un punto temporal', 'error');
+            return;
+        }
+        
+        // Reconectar la flecha
+        const oldId = selectedArrowForReconnect;
+        const label = arrowData.label;
+        const fromShape = arrowData.from;
+        
+        deleteArrow(oldId);
+        createArrow(fromShape, shapeId, label);
+        
+        showAlert(`Flecha "${label}" conectada correctamente`, 'success');
+        
+        selectedArrowForReconnect = null;
+        document.querySelectorAll('.arrow').forEach(a => {
+            a.style.stroke = '#34495e';
+            a.style.strokeWidth = '2';
+        });
+        return;
+    }
+    
+    // Si no hay flecha seleccionada, seleccionar figura como origen normal
     if (!sourceShape) {
         sourceShape = shapeId;
         shapeElement.classList.add('connect-source');
@@ -141,27 +225,20 @@ function handleConnectClick(shapeId, shapeElement) {
         if (exists) {
             showAlert('Esta conexión ya existe', 'error');
         } else {
-            const fromShapeData = getShapeById(sourceShape);
-            let label = '';
-            
-            if (fromShapeData && fromShapeData.type === 'decision') {
-    label = prompt('¿Esta flecha es Sí o No?', 'Sí');
-    if (label === null) label = ''; 
-}
-            createArrow(sourceShape, shapeId, label || '');
+            createArrow(sourceShape, shapeId, '');
             showAlert('Conexión creada exitosamente', 'success');
         }
         document.querySelectorAll('.shape').forEach(s => {
             s.classList.remove('connect-source');
         });
         sourceShape = null;
-        
-        console.log(`✅ Conexión completada`);
     }
 }
+
 function getAllArrows() {
     return arrows;
 }
+
 function loadArrows(arrowsData) {
     arrowsLayer.innerHTML = '';
     arrows = [];
@@ -174,6 +251,7 @@ function loadArrows(arrowsData) {
     arrowIdCounter = arrows.length;
     console.log(`📥 Cargadas ${arrows.length} flechas`);
 }
+
 function clearAllArrows() {
     arrows = [];
     arrowsLayer.innerHTML = '';

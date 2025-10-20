@@ -9,7 +9,6 @@ function initApp() {
     setupButtons();
     setupImportInput();
     updateStats();
-    
     console.log('✅ Aplicación iniciada correctamente');
     console.log('📋 Funcionalidades DÍA 3:');
     console.log('   ✓ Iconos SVG en panel');
@@ -23,37 +22,19 @@ function setupButtons() {
     if (downloadBtn) {
         downloadBtn.addEventListener('click', exportDiagramToJSON);
     }
-    const saveToDbBtn = document.createElement('button');
-    saveToDbBtn.className = 'btn-save-db';
-    saveToDbBtn.innerHTML = '<i class="fa fa-database"></i> Guardar BD';
-    saveToDbBtn.style.cssText = 'position:absolute;top:150px;right:15px;background:#9b59b6;color:white;border:none;padding:10px 20px;border-radius:8px;cursor:pointer;font-weight:bold;z-index:1000;display:flex;align-items:center;gap:8px;';
-    document.querySelector('.canvas-container').appendChild(saveToDbBtn);
-    saveToDbBtn.addEventListener('click', async function() {
-        const shapes = getAllShapes();
-        const arrows = getAllArrows();
-        const comments = getAllComments();
-        
-        if (shapes.length === 0) {
-            showAlert('No hay figuras para guardar', 'error');
-            return;
-        }
-        const name = prompt('Nombre del diagrama:', `Diagrama_${new Date().toLocaleDateString()}`);
-        if (name) {
-            const saved = await saveDiagram(name, { shapes, arrows, comments });
-            if (saved) {
-                showAlert(`✅ Guardado en PouchDB: "${name}"`, 'success');
-            }
-        }
-    });
+
+    document.getElementById('downloadImgBtn').addEventListener('click', downloadAsImage);
     const importBtn = document.getElementById('importBtn');
     if (importBtn) {
         importBtn.addEventListener('click', function() {
             document.getElementById('importInput').click();
         });
     }
+
     if (connectModeBtn) {
         connectModeBtn.addEventListener('click', toggleConnectMode);
     }
+
     const commentMainBtn = document.getElementById('commentMainBtn');
     const commentSubmenu = document.getElementById('commentSubmenu');
     if (commentMainBtn) {
@@ -65,6 +46,7 @@ function setupButtons() {
             }
         });
     }
+
     const commentBtns = document.querySelectorAll('.comment-type-btn');
     commentBtns.forEach(btn => {
         btn.addEventListener('click', function() {
@@ -96,11 +78,18 @@ function setupImportInput() {
     importInput.addEventListener('change', function(e) {
         const file = e.target.files[0];
         if (file) {
-            importFromJSON(file);
+            importFromJSON(file, 
+                (data) => {
+                    console.log('✅ Callback éxito:', data.metadata);
+                },
+                (error) => {
+                    console.error('❌ Callback error:', error);
+                }
+            );
             e.target.value = '';
         }
     });
-}
+}   
 function setupShapeIcons() {
     shapeIcons.forEach(icon => {
         icon.addEventListener('click', function() {
@@ -110,9 +99,7 @@ function setupShapeIcons() {
                 console.log('⚪ Selección cancelada');
                 return;
             }
-            shapeIcons.forEach(i => {
-                i.classList.remove('selected');
-            });
+            shapeIcons.forEach(i => i.classList.remove('selected'));
             this.classList.add('selected');
             selectedShapeType = this.dataset.shape;
             
@@ -334,6 +321,139 @@ async function showSavedDiagrams() {
         }
     }
 }
+function downloadAsImage() {
+    const svgElement = document.getElementById('canvas');
+    const clone = svgElement.cloneNode(true);
+    // Remover el patrón de cuadrícula del clon
+    const gridRect = clone.querySelector('rect[fill*="grid"]');
+    if (gridRect) {
+    gridRect.remove();
+    }
+    // Obtener estilos del CSS
+    const cssStyles = `
+        .shape-rect { fill: #3498db; stroke: #2980b9; stroke-width: 2; }
+        .shape-diamond { fill: #e74c3c; stroke: #c0392b; stroke-width: 2; }
+        .shape-ellipse { fill: #2ecc71; stroke: #27ae60; stroke-width: 2; }
+        .shape-ellipse-end { fill: #34495e; stroke: #2c3e50; stroke-width: 2; }
+        .shape-parallelogram { fill: #f39c12; stroke: #d68910; stroke-width: 2; }
+        .shape-parallelogram-salida { fill: #9b59b6; stroke: #8e44ad; stroke-width: 2; }
+        .shape-text { fill: white; font-size: 14px; font-weight: bold; text-anchor: middle; font-family: Arial; }
+        .arrow { fill: none; stroke: #34495e; stroke-width: 2; }
+        .arrow-label { fill: #34495e; font-size: 12px; font-weight: bold; font-family: Arial; }
+    `;
+    
+    const style = document.createElementNS('http://www.w3.org/2000/svg', 'style');
+    style.textContent = cssStyles;
+    clone.insertBefore(style, clone.firstChild);
+    
+    const svgData = new XMLSerializer().serializeToString(clone);
+    const canvas = document.createElement('canvas');
+    canvas.width = 1400;
+    canvas.height = 900;
+    
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = 'white';
+    ctx.fillRect(0, 0, 1400, 900);
+    
+    const img = new Image();
+    img.onload = function() {
+        ctx.drawImage(img, 0, 0);
+        canvas.toBlob(function(blob) {
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `diagrama_${Date.now()}.png`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+            showAlert('Imagen descargada correctamente', 'success');
+        }, 'image/png');
+    };
+    
+    img.onerror = function() {
+        showAlert('Error al descargar imagen', 'error');
+    };
+    
+    const blob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+    img.src = URL.createObjectURL(blob);
+}
+function importFromJSON(file, successCallback, errorCallback) {
+    const reader = new FileReader();
+    
+    reader.onload = function(e) {
+        try {
+            const data = JSON.parse(e.target.result);
+            
+            if (!data.diagram) {
+                throw new Error('Formato JSON inválido');
+            }
+            
+            clearAllShapes();
+            clearAllArrows();
+            
+            if (data.diagram.shapes) {
+                loadShapes(data.diagram.shapes);
+            }
+            
+            if (data.diagram.arrows) {
+                loadArrows(data.diagram.arrows);
+            }
+            
+            showAlert('Diagrama importado correctamente', 'success');
+            console.log('✅ Diagrama importado:', data.metadata);
+            
+            if (successCallback) {
+                successCallback(data);
+            }
+        } catch (error) {
+            showAlert('Error al importar: ' + error.message, 'error');
+            console.error('❌ Error:', error);
+            if (errorCallback) {
+                errorCallback(error);
+            }
+        }
+    };
+    
+    reader.onerror = function() {
+        showAlert('Error al leer el archivo', 'error');
+        if (errorCallback) {
+            errorCallback('Error al leer archivo');
+        }
+    };
+    
+    reader.readAsText(file);
+}
+function showSaveNotification(message) {
+    const existingNotif = document.querySelector('.save-notification');
+    if (existingNotif) existingNotif.remove();
+    const notif = document.createElement('div');
+    notif.className = 'save-notification';
+    notif.textContent = message;
+    
+    document.body.appendChild(notif);
+    setTimeout(() => {
+        notif.style.animation = 'fadeOut 0.3s ease';
+        setTimeout(() => notif.remove(), 300);
+    }, 2000);
+}
+ setInterval(() => {
+        const shapes = getAllShapes();
+        const arrows = getAllArrows();
+        const comments = getAllComments();
+        if (shapes.length > 0) {
+            const autoName = `AutoGuardado_${new Date().toLocaleTimeString()}`;
+            saveDiagram(autoName, { shapes, arrows, comments })
+                .then(() => {
+                    showSaveNotification('💾 Guardado automático');
+                    console.log('✅ Autoguardado exitoso en PouchDB');
+                })
+                .catch(error => {
+                    console.error('❌ Error en autoguardado:', error);
+                    showAlert('Error al autoguardar', 'error');
+                });
+        }
+    }, 30000); 
 function showWelcomeMessage() {
     console.log('═══════════════════════════════════════════════════');
     console.log('  📊 EDITOR DE DIAGRAMAS DE FLUJO - DÍA 3');
@@ -355,10 +475,5 @@ function showWelcomeMessage() {
     console.log('  • Doble click: Editar texto');
     console.log('═══════════════════════════════════════════════════');
 }
-document.addEventListener('DOMContentLoaded', function() {
-    initApp();
-    setupKeyboardShortcuts();
-    showWelcomeMessage();
-});
-
+document.addEventListener('DOMContentLoaded', initApp);
 console.log('✅ app.js cargado');

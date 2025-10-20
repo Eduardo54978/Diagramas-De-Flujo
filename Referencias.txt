@@ -1,0 +1,102 @@
+DOCUMENTACIÓN DEL PROYECTO - EDITOR DE DIAGRAMAS DE FLUJO
+1. INTRODUCCIÓN
+Este proyecto consiste en un editor visual de diagramas de flujo desarrollado con tecnologías web estándar (HTML5, CSS3, JavaScript y SVG). Durante el desarrollo utilicé inteligencia artificial como herramienta de apoyo para optimizar y mejorar funcionalidades específicas.
+
+2. USO DE INTELIGENCIA ARTIFICIAL
+La IA fue utilizada como asistente de programación en las siguientes áreas:
+2.1. Resolución de problemas técnicos:
+
+Depuración de errores en el sistema de conexiones entre figuras
+Optimización del algoritmo de arrastre de elementos SVG
+Corrección de problemas en la exportación de imágenes PNG
+
+2.2. Mejora de funcionalidades:
+
+Implementación del sistema de reconexión de flechas en modo conexión
+Desarrollo de la función de edición de texto con doble clic
+Creación del sistema de comentarios vinculados a figuras
+
+2.3. Optimización de código:
+
+Refactorización de funciones repetitivas
+Mejora en la estructura y organización del código
+Implementación de mejores prácticas de programación
+
+
+3. LIBRERÍAS Y RECURSOS EXTERNOS UTILIZADOS
+3.1. W3.CSS (https://www.w3schools.com/)
+Descripción: Framework CSS ligero desarrollado por W3Schools para diseño web responsive.
+Motivo de uso: Se utilizó para establecer una base de estilos consistente y simplificar el diseño del panel de herramientas.
+Licencia: Gratuita y de uso libre según W3Schools.
+Forma de obtención:
+html<link rel="stylesheet" type="text/css" href="css/w3.css">
+Descargado desde: https://www.w3schools.com/w3css/4/w3.css
+Funcionalidades utilizadas:
+
+Sistema de grid responsive
+Clases de utilidad para espaciado
+Estilos base para botones y paneles
+
+
+3.2. Font Awesome 4.7.0
+Descripción: Biblioteca de iconos vectoriales escalables ampliamente utilizada en desarrollo web.
+Motivo de uso: Proporcionar iconos visuales para los botones de herramientas y mejorar la experiencia de usuario.
+Licencia: Gratuita bajo licencia SIL OFL 1.1 (iconos) y MIT License (código).
+Forma de obtención:
+html<link rel="stylesheet" href="css/font-awesome-4.7.0/css/font-awesome.min.css">
+Descargado desde: https://fontawesome.com/v4.7.0/
+Iconos utilizados:
+
+fa-pencil (herramientas)
+fa-circle, fa-square, fa-diamond (figuras)
+fa-save, fa-folder-open, fa-download, fa-trash (acciones)
+
+
+3.3. PouchDB 8.0.1
+Descripción: Base de datos JavaScript que permite almacenamiento local en el navegador compatible con CouchDB.
+Motivo de uso: Implementar sistema de guardado automático y persistencia de diagramas sin necesidad de servidor backend.
+Licencia: Apache License 2.0 (código abierto).
+Forma de obtención:
+html<script src="https://cdn.jsdelivr.net/npm/pouchdb@8.0.1/dist/pouchdb.min.js"></script>
+CDN utilizado: jsDelivr (https://www.jsdelivr.com/)
+Funcionalidades implementadas:
+
+Guardado automático cada 30 segundos
+Almacenamiento local de diagramas
+Sistema de carga y recuperación de proyectos
+Persistencia de datos sin conexión a internet
+
+
+4. RECURSOS ADICIONALES CONSULTADOS
+YouTube:
+
+Tutoriales sobre manipulación de SVG con JavaScript
+Guías de Canvas API para exportación de imágenes
+Patrones de diseño para editores visuales
+
+Stack Overflow:
+
+Solución de problemas específicos con eventos de arrastre
+Optimización de renderizado SVG
+Conversión de SVG a PNG en navegador
+
+
+5. FUNCIONALIDADES PRINCIPALES DESARROLLADAS
+
+Creación de figuras: Inicio, Proceso, Decisión, Entrada, Salida, Fin
+Sistema de conexiones: Flechas con etiquetas personalizables
+Edición interactiva: Doble clic para editar texto
+Sistema de comentarios: 4 tipos (Función, Bucle, Decisión, General)
+Exportación: JSON y PNG con estilos preservados
+Importación: Carga de diagramas desde archivos JSON
+Validación: Verificación de estructura correcta del diagrama
+Autoguardado: Persistencia automática cada 30 segundos
+
+
+6. DECLARACIÓN DE AUTORÍA
+Este proyecto fue desarrollado personalmente, utilizando inteligencia artificial como herramienta de asistencia técnica, similar a como se utilizaría un libro de referencia o documentación oficial. Todo el código fue comprendido, adaptado e integrado manualmente.
+Las librerías externas fueron utilizadas respetando sus respectivas licencias y dando el crédito correspondiente a sus autores originales.
+
+Fecha: 20/10/2025
+Autor: José Eduardo Padilla Perez
+Materia: Programación web

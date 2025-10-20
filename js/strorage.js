@@ -1,5 +1,4 @@
 let db;
-
 try {
     db = new PouchDB('flowchart_diagrams');
     console.log('✅ PouchDB inicializada');
@@ -142,8 +141,9 @@ function exportToJSON(data, filename = null) {
         alert('Error al exportar el diagrama.');
     }
 }
-function importFromJSON(file) {
+function importFromJSON(file, onSuccess, onError) {
     if (!file.name.endsWith('.json')) {
+        if (onError) onError('Solo archivos .JSON permitidos');
         showAlert('Solo se permiten archivos .JSON', 'error');
         return;
     }
@@ -159,40 +159,37 @@ function importFromJSON(file) {
             }
             
             if (shapes.length > 0) {
-                if (!confirm('¿Importar archivo? Se perderá el diagrama actual.')) {
+                if (!confirm('¿Importar? Se perderá el diagrama actual.')) {
                     return;
                 }
             }
+            console.log('📤 Iniciando importación...');
             
             clearAllShapes();
             loadShapes(data.diagram.shapes);
             
-            if (data.diagram.arrows && data.diagram.arrows.length > 0) {
-                setTimeout(() => {
-                    loadArrows(data.diagram.arrows);
-                }, 100);
+            if (data.diagram.arrows?.length > 0) {
+                setTimeout(() => loadArrows(data.diagram.arrows), 100);
             }
             
-            if (data.diagram.comments && data.diagram.comments.length > 0) {
-                setTimeout(() => {
-                    loadComments(data.diagram.comments);
-                }, 150);
+            if (data.diagram.comments?.length > 0) {
+                setTimeout(() => loadComments(data.diagram.comments), 150);
             }
-            
             setTimeout(() => {
                 updateStats();
+                if (onSuccess) onSuccess(data);
+                showAlert(`✅ Importado: ${data.diagram.shapes.length} figuras`, 'success');
+                console.log('✅ Importación completada');
             }, 200);
-            
-            showAlert(`✅ Importado: ${data.diagram.shapes.length} figuras`, 'success');
-            console.log('📤 Diagrama importado correctamente');
-            
         } catch (error) {
-            console.error('❌ Error al importar:', error);
-            showAlert('Archivo JSON inválido o corrupto', 'error');
+            if (onError) onError(error.message);
+            console.error('❌ Error:', error);
+            showAlert('Archivo JSON inválido', 'error');
         }
     };
     
     reader.onerror = function() {
+        if (onError) onError('Error al leer archivo');
         showAlert('Error al leer el archivo', 'error');
     };
     
